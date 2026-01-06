@@ -1,0 +1,13 @@
+# Node
+node_modules/
+
+# Environment
+.env
+
+# Firebase
+serviceAccountKey.json
+
+serviceAccountKey.json.json
+
+# OS
+.DS_Store

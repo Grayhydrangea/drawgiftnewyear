@@ -1,0 +1,403 @@
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== TITLE ===== */
+.center-title {
+    position: relative;
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 78px;
+  font-weight: 900;
+  letter-spacing: 6px;
+
+  /* สีเหลืองทอง */
+  color: #ffeb3b;
+
+  /* เรืองแสง */
+  text-shadow:
+    0 0 10px rgba(255,235,59,.8),
+    0 0 25px rgba(255,215,0,.9),
+    0 0 45px rgba(255,193,7,1);
+
+  z-index: 20;
+  pointer-events: none;
+
+  /* animation */
+  animation: titleGlow 2.2s ease-in-out infinite,
+             titleFloat 4s ease-in-out infinite;
+}
+
+/* เรืองแสงเต้น */
+@keyframes titleGlow {
+  0% {
+    text-shadow:
+      0 0 10px rgba(255,235,59,.6),
+      0 0 25px rgba(255,215,0,.7),
+      0 0 40px rgba(255,193,7,.8);
+  }
+  100% {
+    text-shadow:
+      0 0 20px rgba(255,235,59,1),
+      0 0 45px rgba(255,215,0,1),
+      0 0 70px rgba(255,193,7,1);
+  }
+}
+
+/* ลอยขึ้นลงเบา ๆ */
+@keyframes titleFloat {
+  0%   { transform: translate(-50%, 0); }
+  50%  { transform: translate(-50%, -6px); }
+  100% { transform: translate(-50%, 0); }
+}
+
+
+/* ===== BODY ===== */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #8e0000, #c62828);
+  color: #fff;
+}
+
+/* ===== Common ===== */
+h1, h2 {
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+button {
+  background: linear-gradient(135deg, #ffb300, #ff8f00);
+  border: none;
+  color: #5d0000;
+  font-size: 22px;
+  padding: 14px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,.4);
+  transition: transform .2s, box-shadow .2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(0,0,0,.6);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== Admin Layout ===== */
+/* ===== Admin Layout ===== */
+.admin-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  height: 100vh;
+  padding-top: 120px;
+}
+
+/* column พื้นฐาน */
+.admin-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  padding: 20px;
+}
+
+/* แยกสีแต่ละฝั่ง */
+.admin-name {
+  background: rgba(0,0,0,0.18);
+}
+
+.admin-gift {
+  background: rgba(255,255,255,0.06);
+}
+
+.admin-history {
+  background: rgba(0,0,0,0.25);
+  justify-content: flex-start;
+}
+
+/* ===== History ===== */
+.history-list {
+  width: 100%;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 10px 20px;
+}
+
+.history-list p {
+  background: rgba(255,255,255,0.08);
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  font-size: 20px;
+  box-shadow: 0 6px 12px rgba(0,0,0,.25);
+}
+
+/* scrollbar */
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+.history-list::-webkit-scrollbar-thumb {
+  background: rgba(255,235,59,0.7);
+  border-radius: 10px;
+}
+
+
+/* ===== SLOT MACHINE ===== */
+.slot {
+  font-size: 90px;
+  font-weight: bold;
+  color: #ffeb3b;
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 0 20px rgba(0,0,0,.6);
+}
+
+.slot-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+/* หมุนเฉพาะตอนสุ่ม */
+.spinning {
+  animation: slotSpin 0.08s linear infinite;
+}
+
+@keyframes slotSpin {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-100%); }
+}
+
+/* ===== CONFETTI ===== */
+.confetti {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  top: -20px;
+  animation: confettiFall linear forwards;
+  z-index: 999;
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* ===== User Page ===== */
+.user-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* กลางแนวตั้ง */
+  align-items: center;       /* กลางแนวนอน */
+  text-align: center;
+  gap: 25px;
+}
+
+.user-name {
+  font-size: 42px;
+  font-weight: bold;
+  color: #ffeb3b;
+  text-shadow: 0 0 15px rgba(0,0,0,.5);
+}
+
+/* slot ครอบ */
+.slot {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ตัวเลข */
+#result {
+  font-size: 72px;
+  font-weight: bold;
+  color: #ffeb3b;
+  text-shadow: 0 0 20px rgba(0,0,0,.6);
+}
+
+/* ปุ่ม */
+#drawGift {
+  margin-top: 10px;
+}
+
+/* ===== SLOT STABILITY ===== */
+.slot-inner,
+#result {
+  min-width: 300px;
+  text-align: center;
+  transition: transform 0.2s ease-out;
+}
+
+/* ===== STATES ===== */
+.waiting {
+  opacity: 0.6;
+  font-size: 48px;
+}
+
+.winner {
+  color: #fff176;
+  text-shadow:
+    0 0 10px rgba(255,235,59,.8),
+    0 0 25px rgba(255,215,0,.9);
+}
+
+/* ===== NEW YEAR MESSAGE ===== */
+.newyear {
+  margin-top: 25px;
+  font-size: 42px;
+  font-weight: bold;
+  color: #fff176;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  text-shadow:
+    0 0 10px rgba(255,235,59,.7),
+    0 0 25px rgba(255,215,0,.9);
+  transition: all 0.6s ease;
+}
+
+.newyear.show-newyear {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: glowNewYear 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glowNewYear {
+  from {
+    text-shadow:
+      0 0 10px rgba(255,235,59,.6),
+      0 0 20px rgba(255,215,0,.8);
+  }
+  to {
+    text-shadow:
+      0 0 20px rgba(255,235,59,1),
+      0 0 40px rgba(255,215,0,1);
+  }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 6px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,235,59,.9),
+    rgba(255,193,7,1),
+    rgba(255,235,59,.9),
+    transparent
+  );
+
+  animation: lightSweep 3.5s linear infinite;
+  z-index: 15;
+}
+
+@keyframes lightSweep {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}
+
+/* ===== FIREWORKS ===== */
+/* ===== FIREWORKS (FIXED) ===== */
+.fireworks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;        /* ❗ จาก -1 → 5 */
+}
+
+.firework {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  background: radial-gradient(circle,
+    #ffffff,
+    #ff4d6d,
+    #c77dff,
+    #4dabf7
+  );
+
+  box-shadow:
+    0 0 12px rgba(255,255,255,.9),
+    0 0 22px rgba(255,77,109,.8),
+    0 0 32px rgba(199,125,255,.7);
+
+  animation: firework 1.4s ease-out forwards;
+}
+
+@keyframes firework {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), var(--y)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+
+/* ===== FLOATING ITEMS ===== */
+.floating {
+  position: fixed;
+  top: -60px;
+  font-size: 38px;
+  animation: floatDown linear infinite;
+  opacity: 0.85;
+  z-index: 5;
+  pointer-events: none;
+}
+
+@keyframes floatDown {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ===== FLOATING HEARTS ===== */
+.floating-heart {
+  position: fixed;
+  top: -50px;
+  animation: heartFall linear infinite;
+  opacity: 0.85;
+  z-index: 6;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(255,105,180,0.8));
+}
+
+@keyframes heartFall {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(110vh) scale(1.2) rotate(360deg);
+    opacity: 0;
+  }
+}

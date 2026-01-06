@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>สีแดงรับทรัพย์</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- ===== TITLE ===== -->
+<div class="center-title">
+  สีแดงรับทรัพย์
+  <div class="fireworks"></div>
+</div>
+
+<!-- เอฟเฟกต์พลุ -->
+
+
+<div class="admin-container">
+
+  <!-- LEFT -->
+  <div class="admin-col admin-name">
+    <h2>👤 ผู้โชคดี</h2>
+    <div class="slot">
+      <div id="person" class="slot-inner">---</div>
+    </div>
+    <button id="drawPerson">สุ่มชื่อ</button>
+  </div>
+
+  <!-- CENTER -->
+  <div class="admin-col admin-gift">
+    <h2>🎁 เลขของขวัญที่ได้</h2>
+    <div class="slot">
+      <div id="gift" class="slot-inner">---</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="admin-col admin-history">
+    <h2>🏆 ผลการสุ่มทั้งหมด</h2>
+    <div id="history" class="history-list"></div>
+  </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
