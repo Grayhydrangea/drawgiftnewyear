@@ -3,6 +3,7 @@ const http = require("http");
 const cors = require("cors");
 const admin = require("firebase-admin");
 const { Server } = require("socket.io");
+const path = require("path");
 require("dotenv").config();
 
 // ===============================
@@ -22,7 +23,7 @@ const db = admin.firestore();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // 👈 serve admin / user page
+app.use(express.static("public")); // static files
 
 // ===============================
 // HTTP + Socket.IO
@@ -38,16 +39,23 @@ const giftCol = db.collection("gift");
 const historyCol = db.collection("history");
 
 // ===============================
-// Express Routes
+// WEB ROUTES (สำคัญมาก)
 // ===============================
 app.get("/", (req, res) => {
   res.send("🔥 Draw Gift New Year is running");
 });
 
-/* ===============================
-   ✅ API ROUTES (เปลี่ยนจาก /user → /api/user)
-   =============================== */
+app.get("/user", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/user/index.html"));
+});
 
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/admin/index.html"));
+});
+
+// ===============================
+// API ROUTES
+// ===============================
 app.post("/api/user", async (req, res) => {
   try {
     const { name } = req.body;
@@ -140,10 +148,9 @@ io.on("connection", (socket) => {
 
     setTimeout(async () => {
       const giftSnap = await giftCol.where("used", "==", false).get();
-
       const availableGifts = giftSnap.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(g => g.owner !== name); // ❌ ห้ามจับของตัวเอง
+        .filter(g => g.owner !== name); // ❌ ห้ามได้ของตัวเอง
 
       if (!availableGifts.length) {
         io.emit("stop-gift-spin", {
