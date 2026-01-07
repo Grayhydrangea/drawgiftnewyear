@@ -22,7 +22,7 @@ const db = admin.firestore();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static("public")); // 👈 serve admin / user page
 
 // ===============================
 // HTTP + Socket.IO
@@ -38,18 +38,17 @@ const giftCol = db.collection("gift");
 const historyCol = db.collection("history");
 
 // ===============================
-// Helper Functions
-// ===============================
-function randomGift() {
-  return Math.floor(100 + Math.random() * 900);
-}
-
-// ===============================
 // Express Routes
 // ===============================
-app.get("/", (req, res) => res.send("🔥 Firebase Server is running"));
+app.get("/", (req, res) => {
+  res.send("🔥 Draw Gift New Year is running");
+});
 
-app.post("/user", async (req, res) => {
+/* ===============================
+   ✅ API ROUTES (เปลี่ยนจาก /user → /api/user)
+   =============================== */
+
+app.post("/api/user", async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) return res.status(400).json({ message: "name is required" });
@@ -66,10 +65,13 @@ app.post("/user", async (req, res) => {
   }
 });
 
-app.get("/user", async (req, res) => {
+app.get("/api/user", async (req, res) => {
   try {
     const snapshot = await userCol.orderBy("createdAt").get();
-    const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const users = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -80,9 +82,10 @@ app.get("/user", async (req, res) => {
 // Socket.IO Logic
 // ===============================
 let spinning = false;
-const userSockets = {}; // เก็บ mapping userName -> socket.id
+const userSockets = {}; // name -> socket.id
 
-io.on("connection", async (socket) => {
+io.on("connection", (socket) => {
+
   // ----- REGISTER USER -----
   socket.on("register-user", async (name) => {
     socket.userName = name;
@@ -103,7 +106,10 @@ io.on("connection", async (socket) => {
 
     setTimeout(async () => {
       const userSnap = await userCol.where("draw", "==", false).get();
-      const users = userSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const users = userSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
       if (!users.length) {
         io.emit("stop-person-spin", "ไม่มีชื่อ");
@@ -112,12 +118,10 @@ io.on("connection", async (socket) => {
       }
 
       const winner = users[Math.floor(Math.random() * users.length)];
-
       await userCol.doc(winner.id).update({ draw: true });
 
       io.emit("stop-person-spin", winner.name);
 
-      // แจ้งเฉพาะ user คนนั้นว่าถึงตาคุณแล้ว
       const winnerSocketId = userSockets[winner.name];
       if (winnerSocketId) {
         io.to(winnerSocketId).emit("your-turn", winner.name);
@@ -127,54 +131,52 @@ io.on("connection", async (socket) => {
     }, 2000);
   });
 
-// ----- USER: Draw Gift -----
-socket.on("draw-gift", async (name) => {
-  if (spinning) return;
-  spinning = true;
+  // ----- USER: Draw Gift -----
+  socket.on("draw-gift", async (name) => {
+    if (spinning) return;
+    spinning = true;
 
-  // 🔥 แจ้งทุกจอให้เริ่มหมุน
-  io.emit("start-gift-spin");
+    io.emit("start-gift-spin");
 
-  setTimeout(async () => {
-    const giftSnap = await giftCol.where("used", "==", false).get();
-    const availableGifts = giftSnap.docs
-      .map(doc => ({ id: doc.id, ...doc.data() }))
-      .filter(g => g.owner !== name);
+    setTimeout(async () => {
+      const giftSnap = await giftCol.where("used", "==", false).get();
 
-    if (!availableGifts.length) {
+      const availableGifts = giftSnap.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(g => g.owner !== name); // ❌ ห้ามจับของตัวเอง
+
+      if (!availableGifts.length) {
+        io.emit("stop-gift-spin", {
+          person: name,
+          gift: "ไม่มีของขวัญว่าง",
+        });
+        spinning = false;
+        return;
+      }
+
+      const giftItem =
+        availableGifts[Math.floor(Math.random() * availableGifts.length)];
+
+      await giftCol.doc(giftItem.id).update({ used: true });
+
+      await historyCol.add({
+        person: name,
+        gift: giftItem.code,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
       io.emit("stop-gift-spin", {
         person: name,
-        gift: "ไม่มีของขวัญว่าง",
+        gift: giftItem.code,
       });
+
+      const historySnap = await historyCol.orderBy("createdAt").get();
+      const historyUpdated = historySnap.docs.map(doc => doc.data());
+      io.emit("update-history", historyUpdated);
+
       spinning = false;
-      return;
-    }
-
-    const giftItem =
-      availableGifts[Math.floor(Math.random() * availableGifts.length)];
-
-    await giftCol.doc(giftItem.id).update({ used: true });
-
-    await historyCol.add({
-      person: name,
-      gift: giftItem.code,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    // 🔥 หยุดหมุนพร้อมกันทุกจอ (admin + user)
-    io.emit("stop-gift-spin", {
-      person: name,
-      gift: giftItem.code,
-    });
-
-    const historySnap = await historyCol.orderBy("createdAt").get();
-    const historyUpdated = historySnap.docs.map(doc => doc.data());
-    io.emit("update-history", historyUpdated);
-
-    spinning = false;
-  }, 2000); // เวลา spin
-});
-
+    }, 2000);
+  });
 
   // ----- DISCONNECT -----
   socket.on("disconnect", () => {
@@ -189,4 +191,6 @@ socket.on("draw-gift", async (name) => {
 // Start Server
 // ===============================
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+server.listen(PORT, () =>
+  console.log(`🚀 Server running on port ${PORT}`)
+);
