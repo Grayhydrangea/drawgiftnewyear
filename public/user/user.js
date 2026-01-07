@@ -40,7 +40,7 @@ socket.on("stop-gift-spin", (data) => {
 
   if (data.person === myName) {
     myGift = data.gift;
-    result.innerText = `🎉 ได้ของขวัญหมายเลข ${data.gift} ของคุณ ${data.person}`;
+    result.innerText = `🎉 ได้ของขวัญหมายเลข ${data.gift} ของคุณ ${data.owner}`;
     newyear.innerText = "🎊 สวัสดีปีใหม่ 🎊";
     newyear.classList.add("show-newyear");
   } else {

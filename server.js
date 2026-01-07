@@ -169,12 +169,14 @@ io.on("connection", (socket) => {
       await historyCol.add({
         person: name,
         gift: giftItem.code,
+        owner: giftItem.owner,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
       io.emit("stop-gift-spin", {
         person: name,
         gift: giftItem.code,
+        owner: giftItem.owner,
       });
 
       const historySnap = await historyCol.orderBy("createdAt").get();
