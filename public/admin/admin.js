@@ -60,7 +60,7 @@ function renderHistory(list) {
   historyDiv.innerHTML = "";
   list.forEach(item => {
     const p = document.createElement("p");
-    p.innerText = `🎉 ${item.person} ได้ของขวัญหมายเลข ${item.gift}`;
+    p.innerText = `🎉 ${item.person} ได้ของขวัญหมายเลข ${item.gift} ของคุณ ${item.person}`;
     historyDiv.appendChild(p);
   });
 }
