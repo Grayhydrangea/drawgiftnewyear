@@ -46,11 +46,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/user", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/user/index.html"));
+  res.sendFile(path.join(__dirname, "public/user/user.html"));
 });
 
 app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/admin/index.html"));
+  res.sendFile(path.join(__dirname, "public/admin/admin.html"));
 });
 
 // ===============================
