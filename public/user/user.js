@@ -1,38 +1,35 @@
 const socket = io();
 const myName = prompt("กรอกชื่อของคุณที่ใช้ใน Line Openchat (กรุณากรอกให้ตรง)");
-const newyear = document.getElementById("newyear");
+socket.emit("register-user", myName);
 
+const newyear = document.getElementById("newyear");
 document.getElementById("username").innerText = `สวัสดี ${myName}`;
 
 const btn = document.getElementById("drawGift");
 const result = document.getElementById("result");
-
 let interval;
-let myGift = null; // ✅ เก็บผลถาวรของ user
-
-function randomNumber() {
-  return Math.floor(100 + Math.random() * 900);
-}
+let myGift = null;
 
 btn.disabled = true;
 
 // ===== WAIT TURN =====
-socket.on("your-turn", (name) => {
-  if (name === myName) {
+socket.on("your-turn", (winnerName) => {
+  if (winnerName === myName) {
     btn.disabled = false;
     result.innerText = "ถึงตาคุณสุ่ม!";
+  } else {
+    btn.disabled = true;
   }
 });
 
 // ===== START SPIN =====
 socket.on("start-gift-spin", () => {
-  if (myGift) return; // ❗ ถ้าเคยได้แล้ว ไม่ต้องหมุนอีก
-
+  if (myGift) return;
   clearInterval(interval);
   result.classList.add("spinning");
 
   interval = setInterval(() => {
-    result.innerText = randomNumber();
+    result.innerText = Math.floor(100 + Math.random() * 900);
   }, 80);
 });
 
@@ -43,16 +40,11 @@ socket.on("stop-gift-spin", (data) => {
 
   if (data.person === myName) {
     myGift = data.gift;
-
     result.innerText = `🎉 ได้ของขวัญหมายเลข ${data.gift}`;
-
-    // ✅ แสดงคำอวยพร
     newyear.innerText = "🎊 สวัสดีปีใหม่ 🎊";
     newyear.classList.add("show-newyear");
   } else {
-    if (!myGift) {
-      result.innerText = "-";
-    }
+    if (!myGift) result.innerText = "-";
   }
 });
 
@@ -61,7 +53,7 @@ btn.onclick = () => {
   socket.emit("draw-gift", myName);
 };
 
-/* ===== FLOATING HEARTS (USER PAGE) ===== */
+/* ===== FLOATING HEARTS ===== */
 function spawnHeart() {
   const heart = document.createElement("div");
   heart.className = "floating-heart";
@@ -72,9 +64,6 @@ function spawnHeart() {
   heart.style.animationDuration = 6 + Math.random() * 5 + "s";
 
   document.body.appendChild(heart);
-
   setTimeout(() => heart.remove(), 12000);
 }
-
-// ปล่อยหัวใจเรื่อย ๆ
 setInterval(spawnHeart, 900);

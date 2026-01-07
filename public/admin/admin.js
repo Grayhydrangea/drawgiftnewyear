@@ -5,14 +5,15 @@ const giftDiv = document.getElementById("gift");
 const btn = document.getElementById("drawPerson");
 const historyDiv = document.getElementById("history");
 
-let personInterval;
-let giftInterval;
+let personInterval = null;
+let giftInterval = null;
 
 /* ===== RANDOM ===== */
 function randomText() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   return chars[Math.floor(Math.random() * chars.length)];
 }
+
 function randomNumber() {
   return Math.floor(100 + Math.random() * 900);
 }
@@ -34,7 +35,7 @@ socket.on("stop-person-spin", (name) => {
   launchFirework();
 });
 
-/* ===== GIFT ===== */
+/* ===== GIFT (REALTIME SLOT) ===== */
 socket.on("start-gift-spin", () => {
   clearInterval(giftInterval);
   giftDiv.classList.add("spinning");
@@ -47,7 +48,10 @@ socket.on("start-gift-spin", () => {
 socket.on("stop-gift-spin", (data) => {
   clearInterval(giftInterval);
   giftDiv.classList.remove("spinning");
+
+  // ✅ แสดงเลขเดียวกับ user
   giftDiv.innerText = data.gift;
+
   launchFirework();
 });
 
@@ -64,21 +68,21 @@ function renderHistory(list) {
 socket.on("init", ({ history }) => renderHistory(history));
 socket.on("update-history", renderHistory);
 
-btn.onclick = () => socket.emit("draw-person");
+/* ===== ADMIN BUTTON ===== */
+btn.onclick = () => {
+  socket.emit("draw-person");
+};
 
 /* ===== FIREWORK EFFECT ===== */
-const fireworkBox = document.querySelector(".fireworks");
-
 function launchFirework() {
   const box = document.querySelector(".fireworks");
+  if (!box) return;
 
   const titleWidth = box.offsetWidth;
-  const bursts = 7;            // จำนวนจุดระเบิด
+  const bursts = 7;
   const particlesPerBurst = 18;
 
   for (let b = 0; b < bursts; b++) {
-
-    // กระจายตำแหน่งตามความกว้างของตัวอักษร
     const originX = Math.random() * titleWidth;
     const originY = 40 + Math.random() * 30;
 
@@ -91,7 +95,6 @@ function launchFirework() {
 
       dot.style.left = originX + "px";
       dot.style.top = originY + "px";
-
       dot.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
       dot.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
 
@@ -100,7 +103,6 @@ function launchFirework() {
     }
   }
 }
-
 
 /* ===== FLOATING ITEMS ===== */
 function spawnFloating() {
