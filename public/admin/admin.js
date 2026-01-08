@@ -10,7 +10,7 @@ let giftInterval = null;
 
 /* ===== RANDOM ===== */
 function randomText() {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   return chars[Math.floor(Math.random() * chars.length)];
 }
 
