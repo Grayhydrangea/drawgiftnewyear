@@ -1,5 +1,5 @@
 const socket = io();
-const myName = prompt("กรอกชื่อของคุณที่ใช้ใน Line open chat (กรุณากรอกให้ตรงตัวเล็ก-ตัวใหญ่ การเว้นวรรค)");
+const myName = prompt("กรอกชื่อของคุณที่ใช้ใน Line open chat *กรุณากรอกให้ตรง* (ตัวเล็ก-ตัวใหญ่ การเว้นวรรค)");
 socket.emit("register-user", myName);
 
 const newyear = document.getElementById("newyear");
