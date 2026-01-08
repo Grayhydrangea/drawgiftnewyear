@@ -39,7 +39,7 @@ const giftCol = db.collection("gift");
 const historyCol = db.collection("history");
 
 // ===============================
-// WEB ROUTES (สำคัญมาก)
+// WEB ROUTES
 // ===============================
 app.get("/", (req, res) => {
   res.send("🔥 Draw Gift New Year is running");
@@ -150,7 +150,7 @@ io.on("connection", (socket) => {
       const giftSnap = await giftCol.where("used", "==", false).get();
       const availableGifts = giftSnap.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(g => g.owner !== name); // ❌ ห้ามได้ของตัวเอง
+        .filter(g => g.owner !== name);
 
       if (!availableGifts.length) {
         io.emit("stop-gift-spin", {
