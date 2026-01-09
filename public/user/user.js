@@ -25,7 +25,7 @@ socket.emit("check-name", myName);
 /* ===== NAME OK ===== */
 socket.on("name-ok", () => {
   socket.emit("register-user", myName);
-  document.getElementById("username").innerText = `สวัสดี ${myName}`;
+  document.getElementById("username").innerText = `สวัสดีคุณ ${myName}`;
 });
 
 /* ===== INVALID NAME ===== */
