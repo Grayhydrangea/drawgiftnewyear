@@ -105,6 +105,17 @@ io.on("connection", (socket) => {
     socket.emit("init", { history });
   });
 
+  // ----- CHECK NAME -----
+  socket.on("check-name", async (name) => {
+  const snap = await userCol.where("name", "==", name).limit(1).get();
+
+  if (snap.empty) {
+    socket.emit("invalid-name");
+  } else {
+    socket.emit("name-ok");
+  }
+  });
+
   // ----- ADMIN: Draw Person -----
   socket.on("draw-person", async () => {
     if (spinning) return;

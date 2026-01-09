@@ -1,18 +1,40 @@
 const socket = io();
-const myName = prompt("กรอกชื่อของคุณที่ได้แจ้งไว้ใน Line open chat *กรุณากรอกให้ตรง* (ตัวเล็ก-ตัวใหญ่ การเว้นวรรค)");
-socket.emit("register-user", myName);
+
+let myName = null;
+let myGift = null;
+let interval;
 
 const newyear = document.getElementById("newyear");
-document.getElementById("username").innerText = `สวัสดี ${myName}`;
-
 const btn = document.getElementById("drawGift");
 const result = document.getElementById("result");
-let interval;
-let myGift = null;
 
 btn.disabled = true;
 
-// ===== WAIT TURN =====
+/* ===== ASK NAME ===== */
+while (!myName) {
+  const input = prompt(
+    "กรอกชื่อของคุณที่ได้แจ้งไว้ใน Line open chat\n*กรุณากรอกให้ตรง ตัวเล็ก-ตัวใหญ่ และเว้นวรรค*"
+  );
+  if (input && input.trim()) {
+    myName = input.trim();
+  }
+}
+
+socket.emit("check-name", myName);
+
+/* ===== NAME OK ===== */
+socket.on("name-ok", () => {
+  socket.emit("register-user", myName);
+  document.getElementById("username").innerText = `สวัสดี ${myName}`;
+});
+
+/* ===== INVALID NAME ===== */
+socket.on("invalid-name", () => {
+  alert("❌ ชื่อของคุณไม่ถูกต้อง\nกรุณาตรวจสอบชื่อให้ตรงกับที่แจ้งไว้");
+  location.reload(); // โหลดใหม่ให้กรอกชื่ออีกครั้ง
+});
+
+/* ===== WAIT TURN ===== */
 socket.on("your-turn", (winnerName) => {
   if (winnerName === myName) {
     btn.disabled = false;
@@ -22,7 +44,7 @@ socket.on("your-turn", (winnerName) => {
   }
 });
 
-// ===== START SPIN =====
+/* ===== START SPIN ===== */
 socket.on("start-gift-spin", () => {
   if (myGift) return;
   clearInterval(interval);
@@ -33,7 +55,7 @@ socket.on("start-gift-spin", () => {
   }, 80);
 });
 
-// ===== STOP SPIN =====
+/* ===== STOP SPIN ===== */
 socket.on("stop-gift-spin", (data) => {
   clearInterval(interval);
   result.classList.remove("spinning");
